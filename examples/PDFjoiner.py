@@ -125,9 +125,7 @@ class PDFTable(table_base):
 # Move a row
 #==============================================================================
     def MoveRow(self,frm,to):
-        grid = self.GetView()
-
-        if grid:
+        if grid := self.GetView():
             # Move the rowLabels and data rows
             oldData = self.data[frm]
             del self.data[frm]
@@ -152,8 +150,7 @@ class PDFTable(table_base):
 # Insert a row
 #==============================================================================
     def NewRow(self, zeile):
-        grid = self.GetView()
-        if grid:
+        if grid := self.GetView():
             self.data.append(zeile)
             grid.BeginBatch()
             msg = gridlib.GridTableMessage(
@@ -165,8 +162,7 @@ class PDFTable(table_base):
 # Duplicate a row
 #==============================================================================
     def DuplicateRow(self, row):
-        grid = self.GetView()
-        if grid:
+        if grid := self.GetView():
             zeile = [self.data[row][0], self.data[row][1],
                      self.data[row][2], self.data[row][3],
                      self.data[row][4]]
@@ -181,8 +177,7 @@ class PDFTable(table_base):
 # Remove a row
 #==============================================================================
     def DeleteRow(self, row):
-        grid = self.GetView()
-        if grid:
+        if grid := self.GetView():
             del self.data[row]
             grid.BeginBatch()
             msg = gridlib.GridTableMessage(self,
@@ -503,9 +498,7 @@ def make_pdf(dlg):
         if dlg.noToC.Value:                 # no ToC wanted - get next file
             continue
 
-        incr = 1                            # standard increment for page range
-        if bis < von:
-            incr = -1                       # increment for reversed sequence
+        incr = -1 if bis < von else 1
         # list of page numbers in range
         pno_range = list(range(von, bis + incr, incr))
         # standard bokkmark title = "infile [pp from-to of max.pages]"
@@ -533,7 +526,6 @@ def make_pdf(dlg):
         aus_nr += len(pno_range)       # increase output counter
         doc.close()
         doc = None
-
 #==============================================================================
 # all input files processed
 #==============================================================================

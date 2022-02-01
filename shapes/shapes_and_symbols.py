@@ -152,14 +152,8 @@ def arrow(img, r, fill = None, color = None, morph = None):
     the arrow points to: either as a number or as first letter of east(0), south(1),
     west(3), north(4).
     """
-    if color is None:
-        stroke = (1,1,1)
-    else:
-        stroke = color
-    if fill is None:
-        col = (1,0,0)
-    else:
-        col = fill
+    stroke = (1, 1, 1) if color is None else color
+    col = (1, 0, 0) if fill is None else fill
     p1 = r.tl
     p2 = r.bl
     p3 = r.tr + (r.br - r.tr) * 0.5
@@ -187,14 +181,8 @@ def hand(img, r, color = None, fill = None, morph = None):
     y0 = r.y0 + (r.height - h) * 0.5
     rect = fitz.Rect(x0, y0, x0 + w, y0 + h)
 
-    if not color:
-        line = getColor("orange")
-    else:
-        line = color
-    if not fill:
-        skin = getColor("burlywood1")
-    else:
-        skin = fill
+    line = getColor("orange") if not color else color
+    skin = getColor("burlywood1") if not fill else fill
     #--------------------------------------------------------------------------
     # Define control points for the symbol, relative to a rect height of 3.
     # This is the actual brainware of the whole thing ...

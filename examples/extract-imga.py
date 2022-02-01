@@ -62,11 +62,7 @@ def recoverpix(doc, item):
         pix0 = fitz.Pixmap(doc.extract_image(xref)["image"])
         mask = fitz.Pixmap(doc.extract_image(smask)["image"])
         pix = fitz.Pixmap(pix0, mask)
-        if pix0.n > 3:
-            ext = "pam"
-        else:
-            ext = "png"
-
+        ext = "pam" if pix0.n > 3 else "png"
         return {  # create dictionary expected by caller
             "ext": ext,
             "colorspace": pix.colorspace.n,
@@ -127,9 +123,8 @@ for pno in range(page_count):
             continue
 
         imgfile = os.path.join(imgdir, "img%05i.%s" % (xref, image["ext"]))
-        fout = open(imgfile, "wb")
-        fout.write(imgdata)
-        fout.close()
+        with open(imgfile, "wb") as fout:
+            fout.write(imgdata)
         xreflist.append(xref)
 
 t1 = time.time()

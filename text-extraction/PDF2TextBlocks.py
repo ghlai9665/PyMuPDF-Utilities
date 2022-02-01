@@ -30,21 +30,15 @@ import sys
 
 
 def main(*args):
-    if not args:
-        filename = sys.argv[1]
-    else:
-        filename = args[0]
+    filename = sys.argv[1] if not args else args[0]
     ofile = filename + ".txt"
     doc = fitz.open(filename)
-    fout = open(ofile, "wb")
-
-    for page in doc:
-        blocks = page.get_text("blocks")
-        blocks.sort(key=lambda b: (b[1], b[0]))
-        for b in blocks:
-            fout.write(b[4].encode("utf-8"))
-
-    fout.close()
+    with open(ofile, "wb") as fout:
+        for page in doc:
+            blocks = page.get_text("blocks")
+            blocks.sort(key=lambda b: (b[1], b[0]))
+            for b in blocks:
+                fout.write(b[4].encode("utf-8"))
 
 
 if __name__ == "__main__":

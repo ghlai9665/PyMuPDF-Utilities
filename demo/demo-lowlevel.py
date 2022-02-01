@@ -32,20 +32,17 @@ def olTraversal(root):
     while nodes:
         node = nodes.pop()
         print("[OUTLINE]- %s ==> %d" % (node.title, node.dest.page))
-        next = node.next
-        if next:
+        if next := node.next:
             nodes.append(next)
         else:
             print("[OUTLINE]<")
-        down = node.down
-        if down:
+        if down := node.down:
             print("[OUTLINE]>")
             nodes.append(down)
 
 
 # and now let's do this
-ol = doc.outline
-if ol:
+if ol := doc.outline:
     print("Outline of the document")
     olTraversal(ol)
 
@@ -67,8 +64,6 @@ while ln:
         print("[LINK]URI: %s" % ln.dest.uri)
     elif ln.dest.kind == fitz.LINK_GOTO:
         print("[LINK]jump to page %d" % ln.dest.page)
-    else:
-        pass
     ln = ln.next
 
 # we create a transformation matrix here

@@ -16,11 +16,10 @@ doc = fitz.open(fname)
 meta = doc.metadata
 ext = fname[-3:].lower()
 fname1 = fname[:-4] + "-meta.csv"
-outf = open(fname1, "w")
-for k in meta.keys():
-    v = meta.get(k)
-    if not v:
-        v = ""
-    rec = delim.join([k, v])
-    outf.writelines([rec, "\n"])
-outf.close()
+with open(fname1, "w") as outf:
+    for k in meta.keys():
+        v = meta.get(k)
+        if not v:
+            v = ""
+        rec = delim.join([k, v])
+        outf.writelines([rec, "\n"])

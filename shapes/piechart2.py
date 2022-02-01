@@ -41,7 +41,7 @@ table = (  # seats, party color & name
     (1, "gray", "fraktionslos"),
 )
 
-seats = float(sum([c[0] for c in table]))  # total seats
+seats = float(sum(c[0] for c in table))
 stitle = "Bundestagssitze insgesamt: %i" % (seats,)
 
 img.insert_text(fitz.Point(72, 72), title, fontsize=14, color=blue)

@@ -13,6 +13,10 @@ t0 = time.clock() if str is bytes else time.process_time()
 
 
 def flag_values(ff):
+    if ff <= 0:
+        return "(none)"
+    ffb = bin(ff)[2:]
+    l = len(ffb)
     Ff_text = [
         "ReadOnly",  # 0
         "Required",  # 1
@@ -47,15 +51,7 @@ def flag_values(ff):
         "",  # 30
         "",  # 31
     ]
-
-    if ff <= 0:
-        return "(none)"
-    rc = ""
-    ffb = bin(ff)[2:]
-    l = len(ffb)
-    for i in range(l):
-        if ffb[i] == "1":
-            rc += Ff_text[l - i - 1] + " "
+    rc = "".join(Ff_text[l - i - 1] + " " for i in range(l) if ffb[i] == "1")
     return "(" + rc.strip().replace(" ", ", ") + ")"
 
 

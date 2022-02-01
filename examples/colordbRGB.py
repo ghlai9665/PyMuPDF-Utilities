@@ -25,8 +25,7 @@ print("Running:", __file__)
 
 def sortkey(x):
     """Return '001002003' for (colorname, 1, 2, 3)"""
-    k = str(x[1]).zfill(3) + str(x[2]).zfill(3) + str(x[3]).zfill(3)
-    return k
+    return str(x[1]).zfill(3) + str(x[2]).zfill(3) + str(x[3]).zfill(3)
 
 
 # create color list sorted down RGB values

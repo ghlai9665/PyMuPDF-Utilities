@@ -21,6 +21,7 @@ Dependencies:
 This program creates calendars for three years in a row (starting with
 the one given as parameter) and stores the result in a PDF.
 """
+
 import calendar
 import sys
 
@@ -30,11 +31,7 @@ if not tuple(map(int, fitz.VersionBind.split("."))) >= (1, 17, 4):
     raise ValueError("Need PyMuPDF v.1.17.4 at least.")
 if "spacemo" not in fitz.fitz_fontdescriptors.keys():
     raise ValueError("Need pymupdf-fonts package")
-if len(sys.argv) != 2:
-    startyear = fitz.get_pdf_now()[2:6]  # take current year
-else:
-    startyear = sys.argv[1]
-
+startyear = fitz.get_pdf_now()[2:6] if len(sys.argv) != 2 else sys.argv[1]
 if len(startyear) != 4 or not startyear.isnumeric():
     raise ValueError("Start year must be 4 digits")
 

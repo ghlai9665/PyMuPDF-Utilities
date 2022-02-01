@@ -29,10 +29,7 @@ def recoverpix(doc, item):
         return doc.extract_image(x)
 
     def getimage(pix):
-        if pix.colorspace.n != 4:
-            return pix
-        tpix = fitz.Pixmap(fitz.csRGB, pix)
-        return tpix
+        return pix if pix.colorspace.n != 4 else fitz.Pixmap(fitz.csRGB, pix)
 
     # we need to reconstruct the alpha channel with the smask
     pix1 = fitz.Pixmap(doc, x)
@@ -78,7 +75,7 @@ def open_file(filename, password, show=False, pdf=True):
 
 def print_dict(item):
     """Print a Python dictionary."""
-    l = max([len(k) for k in item.keys()]) + 1
+    l = max(len(k) for k in item.keys()) + 1
     for k, v in item.items():
         msg = "%s: %s" % (k.rjust(l), v)
         print(msg)
@@ -147,11 +144,7 @@ def get_list(rlist, limit, what="page"):
             out_list.append(i1)
             continue
 
-        if i1 < i2:  # first less than second
-            out_list += list(range(i1, i2 + 1))
-        else:  # first larger than second
-            out_list += list(range(i1, i2 - 1, -1))
-
+        out_list += list(range(i1, i2 + 1)) if i1 < i2 else list(range(i1, i2 - 1, -1))
     return out_list
 
 
@@ -223,13 +216,13 @@ def poster(args):
     pages = get_list(args.pages, doc.page_count + 1)
     outdoc = fitz.open()
     outdoc.set_metadata(doc.metadata)
+    rects = []
     for pno in pages:
         n = pno - 1
         page = doc[n]
         rect = page.rect
         w = rect.width / args.x
         h = rect.height / args.y
-        rects = []
         for i in range(args.y):
             for j in range(args.x):
                 r = fitz.Rect(j * w, i * h, (j + 1) * w, (i + 1) * h)
@@ -298,10 +291,9 @@ def doc_join(args):
         src_list = src_item.split(",")
         password = src_list[1] if len(src_list) > 1 else None
         src = open_file(src_list[0], password, pdf=True)
-        pages = ",".join(src_list[2:])  # get 'pages' specifications
-        if pages:  # if anything there, retrieve a list of desired pages
+        if pages := ",".join(src_list[2:]):
             page_list = get_list(",".join(src_list[2:]), src.page_count + 1)
-        else:  # take all pages
+        else:
             page_list = range(1, src.page_count + 1)
         for i in page_list:
             doc.insert_pdf(src, from_page=i - 1, to_page=i - 1)  # copy each source page
@@ -328,8 +320,7 @@ def embedded_copy(args):
         names = src_names
     if not names:
         sys.exit("nothing to copy")
-    intersect = names & set(doc.embfile_names())  # any equal name already in target?
-    if intersect:
+    if intersect := names & set(doc.embfile_names()):
         sys.exit("following names already exist in receiving PDF: %s" % str(intersect))
 
     for item in names:
@@ -378,10 +369,9 @@ def embedded_get(args):
         d = doc.embfile_info(args.name)
     except ValueError:
         sys.exit("no such embedded file '%s'" % args.name)
-    filename = args.output if args.output else d["filename"]
-    output = open(filename, "wb")
-    output.write(stream)
-    output.close()
+    filename = args.output or d["filename"]
+    with open(filename, "wb") as output:
+        output.write(stream)
     print("saved entry '%s' as '%s'" % (args.name, filename))
     doc.close()
 
@@ -405,10 +395,7 @@ def embedded_add(args):
     stream = open(args.path, "rb").read()
     filename = args.path
     ufilename = filename
-    if not args.desc:
-        desc = filename
-    else:
-        desc = args.desc
+    desc = filename if not args.desc else args.desc
     doc.embfile_add(
         args.name, stream, filename=filename, ufilename=ufilename, desc=desc
     )
@@ -441,11 +428,7 @@ def embedded_upd(args):
     else:
         stream = None
 
-    if args.filename:
-        filename = args.filename
-    else:
-        filename = None
-
+    filename = args.filename or None
     if args.ufilename:
         ufilename = args.ufilename
     elif args.filename:
@@ -453,11 +436,7 @@ def embedded_upd(args):
     else:
         ufilename = None
 
-    if args.desc:
-        desc = args.desc
-    else:
-        desc = None
-
+    desc = args.desc or None
     doc.embfile_upd(
         args.name, stream, filename=filename, ufilename=ufilename, desc=desc
     )
@@ -538,9 +517,8 @@ def extract_objects(args):
                     outname = os.path.join(
                         out_dir, fontname.replace(" ", "-") + "." + ext
                     )
-                    outfile = open(outname, "wb")
-                    outfile.write(buffer)
-                    outfile.close()
+                    with open(outname, "wb") as outfile:
+                        outfile.write(buffer)
                     buffer = None
         if args.images:
             itemlist = doc.get_page_images(pno - 1)
@@ -553,9 +531,8 @@ def extract_objects(args):
                         ext = pix["ext"]
                         imgdata = pix["image"]
                         outname = os.path.join(out_dir, "img-%i.%s" % (xref, ext))
-                        outfile = open(outname, "wb")
-                        outfile.write(imgdata)
-                        outfile.close()
+                        with open(outname, "wb") as outfile:
+                            outfile.write(imgdata)
                     else:
                         outname = os.path.join(out_dir, "img-%i.png" % xref)
                         pix2 = (
@@ -573,10 +550,7 @@ def extract_objects(args):
 
 
 def page_simple(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
-    if noformfeed:
-        eop = b"\n"
-    else:
-        eop = bytes([12])
+    eop = b"\n" if noformfeed else bytes([12])
     text = page.get_text("text", flags=flags)
     if not text:
         if not skip_empty:
@@ -588,10 +562,7 @@ def page_simple(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
 
 
 def page_blocksort(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
-    if noformfeed:
-        eop = b"\n"
-    else:
-        eop = bytes([12])
+    eop = b"\n" if noformfeed else bytes([12])
     blocks = page.get_text("blocks", flags=flags)
     if blocks == []:
         if not skip_empty:
@@ -651,8 +622,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
         Returns:
             y-ccordinate of appropriate line for value.
         """
-        i = bisect.bisect_right(values, value)
-        if i:
+        if i := bisect.bisect_right(values, value):
             return values[i - 1]
         raise RuntimeError("Line for %g not found in %s" % (value, values))
 
@@ -759,8 +729,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
                         ch = c["c"]
                         if left > ox and ch != " ":
                             left = ox  # update left coordinate
-                        if right < x1:
-                            right = x1  # update right coordinate
+                        right = max(right, x1)
                         # handle ligatures:
                         if cwidth == 0 and chars != []:  # potential ligature
                             old_ch, old_ox, old_oy, old_cwidth = chars[-1]
@@ -873,35 +842,33 @@ def gettext(args):
     doc = open_file(args.input, args.password, pdf=False)
     pagel = get_list(args.pages, doc.page_count + 1)
     output = args.output
-    if output == None:
+    if output is None:
         filename, _ = os.path.splitext(doc.name)
         output = filename + ".txt"
-    textout = open(output, "wb")
-    flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
-    if args.convert_white:
-        flags ^= TEXT_PRESERVE_WHITESPACE
-    if args.noligatures:
-        flags ^= TEXT_PRESERVE_LIGATURES
-    if args.extra_spaces:
-        flags ^= TEXT_INHIBIT_SPACES
-    func = {
-        "simple": page_simple,
-        "blocks": page_blocksort,
-        "layout": page_layout,
-    }
-    for pno in pagel:
-        page = doc[pno - 1]
-        func[args.mode](
-            page,
-            textout,
-            args.grid,
-            args.fontsize,
-            args.noformfeed,
-            args.skip_empty,
-            flags=flags,
-        )
-
-    textout.close()
+    with open(output, "wb") as textout:
+        flags = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE
+        if args.convert_white:
+            flags ^= TEXT_PRESERVE_WHITESPACE
+        if args.noligatures:
+            flags ^= TEXT_PRESERVE_LIGATURES
+        if args.extra_spaces:
+            flags ^= TEXT_INHIBIT_SPACES
+        func = {
+            "simple": page_simple,
+            "blocks": page_blocksort,
+            "layout": page_layout,
+        }
+        for pno in pagel:
+            page = doc[pno - 1]
+            func[args.mode](
+                page,
+                textout,
+                args.grid,
+                args.fontsize,
+                args.noformfeed,
+                args.skip_empty,
+                flags=flags,
+            )
 
 
 def main():

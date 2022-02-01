@@ -10,6 +10,7 @@ Draw lines p0 to p2, p1 to p3, p2 to p4, ..., p[n-1] to p1.
 
 Just change the 'curve' value to create a different curve.
 """
+
 import fitz
 
 doc = fitz.open()
@@ -41,7 +42,7 @@ Compute the points on the perimeter. We do this by "abusing" the
 """
 points = [p0]  # first point
 point = p0
-for i in range(1, n):
+for _ in range(1, n):
     point = shape.draw_sector(center, point, theta)  # computes next point
     points.append(point)
 shape.draw_cont = ""  # we only need the points: discard draw commands

@@ -142,15 +142,14 @@ def get_new_fontname(old_fontname):
     name length is restricted to 32 bytes (by MuPDF).
     So we check instead, whether a dict key "almost" matches.
     """
-    new_fontname = new_fontnames.get(old_fontname, None)
-    if new_fontname:  # the simple case.
+    if new_fontname := new_fontnames.get(old_fontname, None):
         return new_fontname
     fontlist = [  # build list of "almost matching" keys
         new_fontnames[n]
         for n in new_fontnames.keys()
         if n.startswith(old_fontname) or old_fontname.startswith(n)
     ]
-    if fontlist == []:
+    if not fontlist:
         return None
     # the list MUST contain exactly one item!
     if len(fontlist) > 1:  # this should not happen!
@@ -205,8 +204,7 @@ def resize(span, font):
     tl = font.text_length(text, fontsize=fsize)
     if tl <= rect.width:  # doesn't exceed bbox width
         return fsize
-    new_size = rect.width / tl * fsize  # new fontsize
-    return new_size
+    return rect.width / tl * fsize
 
 
 def cont_clean(page, fontrefs):
@@ -241,11 +239,10 @@ def cont_clean(page, fontrefs):
                         found = True  # switch on
                         lines[i] = b""  # remove line
                         changed = True  # tell we have changed
-                        continue  # next line
                     else:  # else not our font
                         found = False  # switch off
-                        continue  # next line
-                if found == True and (
+                    continue  # next line
+                if found and (
                     lines[i].endswith(
                         (
                             b"TJ",
@@ -297,7 +294,7 @@ def clean_fontnames(page):
         names = font_xrefs.get(xref, set())
         names.add(name)
         font_xrefs[xref] = names
-    for xref in font_xrefs.keys():
+    for xref in font_xrefs:
         names = list(font_xrefs[xref])
         names.sort()  # read & sort font names for this xref
         name0 = b"/" + names[0].encode() + b" "  # we will keep this font name
@@ -316,10 +313,8 @@ def build_repl_table(doc, fname):
     Read the JSON font relacement file and store its information in
     dictionaries 'font_subsets', 'font_buffers' and 'new_fontnames'.
     """
-    fd = open(fname)
-    fontdicts = json.load(fd)
-    fd.close()
-
+    with open(fname) as fd:
+        fontdicts = json.load(fd)
     for fontdict in fontdicts:
         oldfont = fontdict["oldfont"]
         newfont = fontdict["newfont"].strip()
@@ -440,7 +435,7 @@ for page in indoc:
 times.append(("Analyzing:", timer()))
 print("Font replacement overview:")
 
-max_len = max([len(k) for k in new_fontnames.keys()]) + 1
+max_len = max(len(k) for k in new_fontnames.keys()) + 1
 for k in new_fontnames.keys():
     print(k.rjust(max_len), "replaced by: %s." % new_fontnames[k])
 print()
@@ -458,14 +453,12 @@ for page in indoc:
     cont_clean(page, fontrefs)  # remove text using fonts to be replaced
     textwriters = {}  # contains one text writer per detected text color
 
+    bidi_level = 0  # not used
     for block in blocks:
         for line in block["lines"]:
             wmode = line["wmode"]  # writing mode (horizontal, vertical)
             wdir = list(line["dir"])  # writing direction
-            markup_dir = 0
-            bidi_level = 0  # not used
-            if wdir == [0, 1]:
-                markup_dir = 4
+            markup_dir = 4 if wdir == [0, 1] else 0
             for span in line["spans"]:
                 new_fontname = get_new_fontname(span["font"])
                 if new_fontname is None:  # do not replace this font
@@ -481,7 +474,7 @@ for page in indoc:
                     tilted_span(page, wdir, span, font)
                     continue
                 color = span["color"]  # make or reuse textwriter for the color
-                if color in textwriters.keys():  # already have a textwriter?
+                if color in textwriters:  # already have a textwriter?
                     tw = textwriters[color]  # re-use it
                 else:  # make new
                     tw = fitz.TextWriter(page.rect)  # make text writer
@@ -497,7 +490,7 @@ for page in indoc:
                     print("page %i exception:" % page.number, text)
 
     # now write all text stored in the list of text writers
-    for color in textwriters.keys():  # output the stored text per color
+    for color in textwriters:  # output the stored text per color
         tw = textwriters[color]
         outcolor = fitz.sRGB_to_pdf(color)  # recover (r,g,b)
         tw.write_text(page, color=outcolor)

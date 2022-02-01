@@ -65,10 +65,7 @@ def recoverpix(doc, x, imgdict):
         pix0 = fitz.Pixmap(imgdict["image"])
         mask = fitz.Pixmap(doc.extract_image(s)["image"])
         pix = fitz.Pixmap(pix0, mask)
-        if pix0.n > 3:
-            ext = "pam"
-        else:
-            ext = "png"
+        ext = "pam" if pix0.n > 3 else "png"
         return {"ext": ext, "colorspace": pix.colorspace.n, "image": pix.tobytes(ext)}
     except:
         return None
@@ -156,13 +153,11 @@ for xref in range(1, lenXREF):  # scan through all PDF objects
 
     imgn1 = fpref + "-%i.%s" % (xref, ext)
     imgname = os.path.join(imgdir, imgn1)
-    ofile = open(imgname, "wb")
-    ofile.write(imgdata)
-    ofile.close()
-
+    with open(imgname, "wb") as ofile:
+        ofile.write(imgdata)
 # now delete any /SMask files not filtered out before
 removed = 0
-if len(smasks) > 0:
+if smasks:
     imgdir_ls = os.listdir(imgdir)
     for smask in smasks:
         imgn1 = fpref + "-%i" % smask

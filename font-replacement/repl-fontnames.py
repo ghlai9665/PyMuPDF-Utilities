@@ -151,11 +151,11 @@ for i in range(len(doc)):
 font_list = list(font_list)
 font_list.sort(key=lambda x: x[0])
 outname = infilename + "-fontnames.json"
-out = open(outname, "w")
-outlist = []
-for fontname, msg in font_list:
+with open(outname, "w") as out:
     msg1 = "keep"
-    outlist.append({"oldfont": fontname, "newfont": msg1, "info": msg})
+    outlist = [
+        {"oldfont": fontname, "newfont": msg1, "info": msg}
+        for fontname, msg in font_list
+    ]
 
-json.dump(outlist, out, indent=2)
-out.close()
+    json.dump(outlist, out, indent=2)

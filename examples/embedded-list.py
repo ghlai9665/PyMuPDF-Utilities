@@ -27,13 +27,7 @@ import fitz
 def char_repl(x):
     """A little embarrassing: couldn't figure out how to avoid crashes when
     hardcore unicode occurs in description fields ..."""
-    r = ""
-    for c in x:
-        if ord(c) > 255:
-            r += "?"
-        else:
-            r += c
-    return r
+    return "".join("?" if ord(c) > 255 else c for c in x)
 
 
 fn = sys.argv[1]
@@ -62,7 +56,7 @@ for i in range(doc.embfile_count):  # number of embedded files
     tlength += ef[4]  # add to total orignal file size
     tsize += ef[3]  # add to total compressed file size
 
-if len(ef_list) < 1:  # are we being fooled?
+if not ef_list:  # are we being fooled?
     print("no embedded files in", fn)
     exit(1)
 

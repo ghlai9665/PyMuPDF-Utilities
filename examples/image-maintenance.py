@@ -65,7 +65,7 @@ def getint(v):
         return int(v)  # fastest
     except:
         pass
-    if not type(v) is str:  # we need a string at least
+    if type(v) is not str:  # we need a string at least
         return 0
     return int("0" + "".join((d for d in v if d in "0123456789")))
 

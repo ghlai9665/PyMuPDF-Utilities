@@ -36,8 +36,7 @@ def ocr_the_page(page):
         # force_ocr=True, redo_ocr=True
     )
     ocr_pdf = fitz.open("pdf", outbytes.getvalue())  # read output as fitz PDF
-    text = ocr_pdf[0].get_text()  # ...and extract text from the page
-    return text  # return it
+    return ocr_pdf[0].get_text()
 
 
 if __name__ == "__main__":

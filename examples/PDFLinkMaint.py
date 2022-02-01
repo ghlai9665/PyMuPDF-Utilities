@@ -37,7 +37,7 @@ except ImportError:
 
 app = None
 app = wx.App()
-assert wx.VERSION[0:3] >= (3,0,3), "need wxPython Phoenix version"
+assert wx.VERSION[:3] >= (3,0,3), "need wxPython Phoenix version"
 assert tuple(map(int, fitz.VersionBind.split("."))) >= (1,10,0),\
        "need PyMuPDF 1.10.0 or later"
 cur_hand  = wx.Cursor(wx.CURSOR_HAND)
@@ -45,10 +45,7 @@ cur_cross = wx.Cursor(wx.CURSOR_CROSS)
 cur_nwse  = wx.Cursor(wx.CURSOR_SIZENWSE)
 cur_norm  = wx.Cursor(wx.CURSOR_DEFAULT)
 
-if str != bytes:                       # we are on Python 3
-    stringtypes = (str, bytes)
-else:
-    stringtypes = (str, unicode)
+stringtypes = (str, bytes) if str != bytes else (str, unicode)
 
 def getint(v):
     try:

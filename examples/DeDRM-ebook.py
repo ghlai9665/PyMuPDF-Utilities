@@ -26,12 +26,7 @@ in a new PDF.
 
 The page image grabbing and paging through the book is done with pyautogui.
 """
-if str == bytes:
-    getResponse = raw_input
-else:
-    getResponse = input
-
-
+getResponse = raw_input if str == bytes else input
 # This is the rectangle copied. You should adjust it until it fits!
 # PyAutoGUI region parameter expects
 #      (left, top, width, height)
@@ -51,7 +46,7 @@ if answer == "y":
     raise SystemExit
 
 print("activate / click the e-book window NOW (5 sec) ...")
-time.sleep(5)    
+time.sleep(5)
 print("starting process now")
 print("Hands off! The e-book window needs focus all the time!")
 

@@ -80,7 +80,7 @@ def ParseTab(page, bbox, columns=None):
                     break
             alltxt.append([ir.x0, ir.y0, ir.x1, cnr, w[4]])
 
-    if alltxt == []:
+    if not alltxt:
         print("Warning: no text found in rectangle!")
         return []
 

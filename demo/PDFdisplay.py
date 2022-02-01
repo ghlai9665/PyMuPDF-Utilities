@@ -58,11 +58,11 @@ except ImportError:
 
 app = None
 app = wx.App()
-assert wx.VERSION[0:3] >= (3,0,2), "need wxPython 3.0.2 or later"
+assert wx.VERSION[:3] >= (3,0,2), "need wxPython 3.0.2 or later"
 assert tuple(map(int, fitz.VersionBind.split("."))) >= (1,9,2), "need PyMuPDF 1.9.2 or later"
 
 # make some adjustments for differences between wxPython versions 3.0.2 / 3.0.3
-if wx.VERSION[0:3] >= (3,0,3):
+if wx.VERSION[:3] >= (3, 0, 3):
     cursor_hand  = wx.Cursor(wx.CURSOR_HAND)
     cursor_norm  = wx.Cursor(wx.CURSOR_DEFAULT)
     bmp_buffer = wx.Bitmap.FromBuffer
@@ -73,10 +73,7 @@ else:
     bmp_buffer = wx.BitmapFromBuffer
     phoenix = False
 
-if str != bytes:
-    stringtypes = (str, bytes)
-else:
-    stringtypes = (str, unicode)
+stringtypes = (str, bytes) if str != bytes else (str, unicode)
 
 def getint(v):
     try:
@@ -387,11 +384,10 @@ class PDFdisplay(wx.Dialog):
                  style = wx.TextEntryDialogStyle|wx.TE_PASSWORD)
         while pw is None:
             rc = dlg.ShowModal()
-            if rc == wx.ID_OK:
-                pw = str(dlg.GetValue().encode("utf-8"))
-                self.doc.authenticate(pw)
-            else:
+            if rc != wx.ID_OK:
                 return
+            pw = str(dlg.GetValue().encode("utf-8"))
+            self.doc.authenticate(pw)
             if self.doc.is_encrypted:
                 pw = None
                 dlg.SetTitle("Wrong password. Enter correct one or cancel.")
@@ -412,12 +408,7 @@ dlg = wx.FileDialog(None, message = "Choose a file to display",
                     wildcard = wild, style=wx.FD_OPEN|wx.FD_CHANGE_DIR)
 
 # We got a file only when one was selected and OK pressed
-if dlg.ShowModal() == wx.ID_OK:
-    # This returns a Python list of selected files (we only have one though)
-    filename = dlg.GetPath()
-else:
-    filename = None
-
+filename = dlg.GetPath() if dlg.ShowModal() == wx.ID_OK else None
 # destroy this dialog
 dlg.Destroy()
 
@@ -427,5 +418,5 @@ if filename:
     dlg = PDFdisplay(None, filename)
     # show it - this will only return for final housekeeping
     rc = dlg.ShowModal()
-    
+
 app = None

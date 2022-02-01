@@ -14,10 +14,8 @@ name = sys.argv[2]  # embedded file identifier
 expfn = sys.argv[3]  # filename of exported file
 
 doc = fitz.open(pdffn)  # open PDF
-outfile = open(expfn, "wb")  # to be on the safe side always open binary
+with open(expfn, "wb") as outfile:
+    # extract file content. Will get exception on any error.
+    content = doc.embfile_get(name)
 
-# extract file content. Will get exception on any error.
-content = doc.embfile_get(name)
-
-outfile.write(content)
-outfile.close()
+    outfile.write(content)

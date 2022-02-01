@@ -109,7 +109,7 @@ while True:  # loop forever
         break  # user is fed up seeing this
     if i == 0:
         add = 1
-    if i == 360:
+    elif i == 360:
         add = -1
     i += add
     loop_count += 1  # tally the loops
