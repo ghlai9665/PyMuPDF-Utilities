@@ -65,7 +65,7 @@ def FindFit(w, h):
 
     sw = str(w1)                       # string versions
     sh = str(h1)
-    
+
     # deviation of input from existing forms
     stab = [abs(w1-s[0])+abs(h1-s[1]) for s in Size.values()]
     small = min(stab)                  # minimum deviation
@@ -82,5 +82,5 @@ def FindFit(w, h):
     if small < 2:                      # exact fit - allow rounnding errors
         return ff                      # done
     rtxt = "%s x %s (other), closest: %s = %s"   # else show best fit
-    rtxt = rtxt % (sw, sh, ff, ss)
+    rtxt %= (sw, sh, ff, ss)
     return rtxt

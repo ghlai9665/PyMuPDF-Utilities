@@ -23,18 +23,12 @@ import sys
 
 
 def main(*args):
-    if not args:
-        filename = sys.argv[1]
-    else:
-        filename = args[0]
+    filename = sys.argv[1] if not args else args[0]
     ofile = filename + ".txt"
     doc = fitz.open(filename)
-    fout = open(ofile, "wb")
-
-    for page in doc:
-        fout.write(page.get_text().encode("utf-8") + bytes((12,)))
-
-    fout.close()
+    with open(ofile, "wb") as fout:
+        for page in doc:
+            fout.write(page.get_text().encode("utf-8") + bytes((12,)))
 
 
 if __name__ == "__main__":

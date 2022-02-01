@@ -80,9 +80,7 @@ doc.get_page_pixmap(0).save(fileprfx + ".png")
 # save as SVG / SVGZ images
 svg = page.get_svg_image()
 svgz = gzip.compress(svg.encode("utf-8"))
-fout = open(fileprfx + ".svg", "w")
-fout.write(svg)
-fout.close()
-fout = open(fileprfx + ".svgz", "wb")
-fout.write(svgz)
-fout.close()
+with open(fileprfx + ".svg", "w") as fout:
+    fout.write(svg)
+with open(fileprfx + ".svgz", "wb") as fout:
+    fout.write(svgz)

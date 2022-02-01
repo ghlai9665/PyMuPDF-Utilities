@@ -126,7 +126,7 @@ if __name__ == "__main__":
         for item in items:
             if item[0].is_empty:  # skip empty ones
                 continue
-            if not item[1].lower() in m:
+            if item[1].lower() not in m:
                 continue  # skip what does not exactly fit.
             annot = page.add_rect_annot(item[0])  # else surround the word with a thin
             annot.set_border(width=0.3)  # border (cosmetics)

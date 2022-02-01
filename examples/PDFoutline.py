@@ -236,14 +236,10 @@ class PDFTable(table_base):
         if col != 1:
             return str(self.data[row][col])
         lvl = int(self.data[row][0]) - 1
-        val = " " * lvl + self.data[row][1]  # simulate hierarchy lvl by spaces
-        return val
+        return " " * lvl + self.data[row][1]
 
     def SetValue(self, row, col, val):  # put value from cell to data table
-        if col == 1:
-            x_val = val.strip()  # strip off indentations
-        else:
-            x_val = int(val)
+        x_val = val.strip() if col == 1 else int(val)
         self.data[row][col] = x_val
 
     # ==============================================================================
@@ -299,8 +295,7 @@ class PDFTable(table_base):
     # Duplicate a row, called with row number
     # ==============================================================================
     def DuplicateRow(self, row):
-        grid = self.GetView()
-        if grid:
+        if grid := self.GetView():
             zeile = [
                 self.data[row][0],
                 self.data[row][1],
@@ -319,8 +314,7 @@ class PDFTable(table_base):
     # Delete a row. called with row number.
     # ==============================================================================
     def DeleteRow(self, row):
-        grid = self.GetView()
-        if grid:
+        if grid := self.GetView():
             del self.data[row]
             grid.BeginBatch()  # inform the grid
             msg = gridlib.GridTableMessage(

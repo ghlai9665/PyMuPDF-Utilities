@@ -18,11 +18,8 @@ fname1 = fname[:-4] + "-toc.csv"
 outf = open(fname1, "w")
 for t in toc:
     t4 = t[3]
-    if ext == "pdf":
-        if t4["kind"] == 1:
-            p4 = str(t4["to"].y)
-        else:
-            p4 = "0"
+    if ext == "pdf" and t4["kind"] == 1:
+        p4 = str(t4["to"].y)
     else:
         p4 = "0"
     rec = delim.join([str(t[0]), t[1].strip(), str(t[2]), p4])

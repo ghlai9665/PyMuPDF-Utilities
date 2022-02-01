@@ -21,6 +21,7 @@ PyMuPDF v1.12.2+
 
 """
 
+
 import fitz
 
 print(fitz.__doc__)
@@ -40,7 +41,7 @@ points = [p0]  # to store the polygon edges
 
 # we only use this to calculate the polygon edges
 # we will delete the resp. draw commands
-for i in range(nedge - 1):
+for _ in range(nedge - 1):
     p0 = img.draw_sector(center, p0, beta)
     points.append(p0)
 
@@ -58,7 +59,6 @@ img.finish(color=(0, 0, 1), fill=(1, 1, 0), closePath=False)
 page.set_cropbox(img.rect)
 img.commit()
 doc.save(outpdf)
-fout = open(outsvg, "w")
-fout.write(page.get_svg_image())
-fout.close()
+with open(outsvg, "w") as fout:
+    fout.write(page.get_svg_image())
 doc.close()

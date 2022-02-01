@@ -36,13 +36,10 @@ def sortkey(x):
         hue = 60. * (((b - r)/delta) + 2)
     else:
         hue = 60. * (((r - g)/delta) + 4)
-        
+
     H = str(int(round(hue))).zfill(3)
-    
-    if cmax == 0:
-        sat = 0
-    else:
-        sat = delta / cmax
+
+    sat = 0 if cmax == 0 else delta / cmax
     S = str(int(round(sat  * 100))).zfill(3)
 
     return H + S + V

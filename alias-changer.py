@@ -252,9 +252,8 @@ def alias_changer(infile, backup):
         if os.path.exists(bak_name):
             os.remove(bak_name)
         os.rename(infile, bak_name)
-    outfile = open(infile, "wb")
-    outfile.write(text)
-    outfile.close()
+    with open(infile, "wb") as outfile:
+        outfile.write(text)
 
 
 def main():

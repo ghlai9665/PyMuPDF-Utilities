@@ -62,14 +62,13 @@ def punch(x, y, step):
     # the central one will be filled with the color
     for i in range(3):
         for j in range(3):
-            if i != j or i != 1:
-                if s >= 3:  # else prevent going down another level
-                    punch(x + i * s, y + j * s, s)
-            else:
+            if i == j and i == 1:
                 pm.set_rect((x + s, y + s, x + 2 * s, y + 2 * s), color)
                 # pm.copy(fill, (x+s, y+s, x+2*s, y+2*s))
                 # pm.invert_irect((x+s, y+s, x+2*s, y+2*s))
 
+            elif s >= 3:  # else prevent going down another level
+                punch(x + i * s, y + j * s, s)
     return
 
 

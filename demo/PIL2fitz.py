@@ -11,18 +11,13 @@ Changes in v1.10.0
 -------------------
 - omit alpha to save image memory
 """
-if len(sys.argv) == 2:
-    pic_fn = sys.argv[1]
-else:
-    pic_fn = None
-
+pic_fn = sys.argv[1] if len(sys.argv) == 2 else None
 if pic_fn:
     print("Reading %s" % pic_fn)
-    pic_f = open(pic_fn, "rb")
-    img = Image.open(pic_f).convert("RGB")
-    samples = img.tobytes()
-    pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples, 0)
-    outputFileName = pic_fn + "-from-PIL.png"
-    print("Writing %s" % outputFileName)
-    pix.save(outputFileName)
-    pic_f.close()
+    with open(pic_fn, "rb") as pic_f:
+        img = Image.open(pic_f).convert("RGB")
+        samples = img.tobytes()
+        pix = fitz.Pixmap(fitz.csRGB, img.size[0], img.size[1], samples, 0)
+        outputFileName = pic_fn + "-from-PIL.png"
+        print("Writing %s" % outputFileName)
+        pix.save(outputFileName)

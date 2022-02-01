@@ -44,17 +44,13 @@ if not search1:
 rect1 = search1[0]  # the rectangle that surrounds the search string
 ymin = rect1.y1     # table starts below this value
 
-#==============================================================================
-# search for bottom of table
-#==============================================================================
-search2 = page.search_for("related tasks", hit_max = 1)
-if not search2:
-    print("warning: table bottom delimiter not found - using end of page")
-    ymax = 99999
-else:
+if search2 := page.search_for("related tasks", hit_max=1):
     rect2 = search2[0]  # the rectangle that surrounds the search string
     ymax = rect2.y0     # table ends above this value
 
+else:
+    print("warning: table bottom delimiter not found - using end of page")
+    ymax = 99999
 if not ymin < ymax:     # something was wrong with the search strings
     raise ValueError("table bottom delimiter higher than top")
 
@@ -63,11 +59,7 @@ if not ymin < ymax:     # something was wrong with the search strings
 #==============================================================================
 tab = ParseTab(page, [0, ymin, 9999, ymax])
 
-#print(table_title)
-#for t in tab:
-#    print(t)
-csv = open("p%s.csv" % (pno+1,), "w")
-csv.write(table_title + "\n")
-for t in tab:
-    csv.write("|".join(t).encode("utf-8","ignore") + "\n")
-csv.close()
+with open("p%s.csv" % (pno+1,), "w") as csv:
+    csv.write(table_title + "\n")
+    for t in tab:
+        csv.write("|".join(t).encode("utf-8","ignore") + "\n")

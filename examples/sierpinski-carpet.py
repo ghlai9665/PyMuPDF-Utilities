@@ -55,12 +55,12 @@ color = (0, 0, 255)  # color to fill the punch holes
 fill = fitz.Pixmap(pm, 0)  # copy pm
 fill.invert_irect(fill.irect)  # inverted colors of pm
 
-for lvl in range(0, n + 1):
+for lvl in range(n + 1):
     step = 3 ** (n - lvl)
-    for x in range(0, 3 ** lvl):
+    for x in range(3 ** lvl):
         x0 = x * step
         if x % 3 == 1:
-            for y in range(0, 3 ** lvl):
+            for y in range(3 ** lvl):
                 y0 = y * step
                 if y % 3 == 1:
                     pm.set_rect((y0, x0, y0 + step, x0 + step), color)
